@@ -1,0 +1,11 @@
+recodetector:
+  name: "doctr"
+editor:
+  name: "render"
+translator:
+  name: "textra"
+  src_lang: "en"
+  trg_lang: "de"
+common:
+  gpu: False
+  greedy: False

@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imagetra"
+version = "0.0"
+description = "ImageTra: A toolkit for In-Image MT pipeline."
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "scikit-image>=0.25.2",
+    "transformers>=4.52.3",
+    "langcodes>=3.5.0",
+    "sacrebleu>=2.5.1",
+    "evaluate",
+    "jiwer",
+    "numpy<2",
+    "PyYAML",
+    "pyarrow<=20.0.0",
+    "contourpy<=1.3.2",
+    "pyfoma>=1.0.7",
+]
+
+[project.optional-dependencies]
+doctr = [
+    "opencv-python>=4.11.0.86",
+    "opencv-contrib-python>=4.9.0.80",
+    "boxmot>=13.0.9",
+    "python-doctr>=0.11.0",
+]
+openocr = [
+    "opencv-python>=4.6.0.66",
+    "opencv-contrib-python>=4.9.0.80",
+    "boxmot>=10.0.52",
+    "openocr-python>=0.0.9",
+    "onnxruntime",
+]
+easyocr = [
+    "opencv-python>=4.11.0.86",
+    "opencv-contrib-python>=4.9.0.80",
+    "boxmot>=13.0.9",
+    "easyocr>=1.7.2",
+]
+paddleocr = [
+    "opencv-python>=4.11.0.86",
+    "opencv-contrib-python>=4.9.0.80",
+    "boxmot>=13.0.9",
+    "paddlepaddle-gpu==2.6.2",
+    "paddleocr==2.10.0",
+    "setuptools"
+]
+all = [
+    "opencv-python>=4.11.0.86",
+    "opencv-contrib-python>=4.9.0.80",
+    "boxmot>=13.0.9",
+    "python-doctr>=0.11.0",
+    "openocr-python>=0.0.9",
+    "onnxruntime",
+    "easyocr>=1.7.2",
+    "paddlepaddle-gpu==2.6.2",
+    "paddleocr==2.10.0",
+    "setuptools"
+]
+
+[tool.setuptools]
+packages = ["imagetra"]  # Replace with the actual package names if needed
+
+[tool.setuptools.package-data]
+# Include any package data here if needed, e.g. {"": ["*.txt"]}
+
+[project.scripts]
+# Add console scripts here if needed, e.g. myscript = "imagetra.module:main"

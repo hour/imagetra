@@ -1,0 +1,12 @@
+recodetector:
+  name: "paddleocr"
+  langs: "en"
+editor:
+  name: "render"
+translator:
+  name: "nllb"
+  model_name: "facebook/nllb-200-distilled-600M"
+  trg_lang: "deu_Latn"
+common:
+  gpu: True
+  greedy: False
