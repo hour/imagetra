@@ -1,6 +1,7 @@
 from imagetra.common.media import Image
 from imagetra.api.base import BaseServer, BaseClient
 from imagetra.common.logger import get_logger
+from imagetra.tracker import boxmot
 
 import base64, cv2
 import numpy as np
@@ -16,11 +17,22 @@ def image_to_b64(image):
     return base64.b64encode(buffer).decode('utf-8')
 
 class FlaskServer(BaseServer):
-    def run(self, host:str='localhost', port: str='0000'):
+    """
+    Example:
+    FlaskServer(
+        pipeline=pipeline, fn_filter=filter.filter
+    ).run(
+        host='localhost', port='8000'
+    )
+    """
+    
+    def run(self, host:str='localhost', port: str='8000', tracker_type=boxmot.DEFAULT_TRACKER_TYPE):
         logger = get_logger('FlaskServer')
 
         from flask import Flask, request, jsonify
         import time
+
+        tracker = self.build_tracker(tracker_type=tracker_type)
 
         app = Flask(__name__)
         @app.route('/vdo2vdo', methods=['POST'])
@@ -37,29 +49,35 @@ class FlaskServer(BaseServer):
             logger.info(img_id)
             if img_id == 0:
                 is_reset = True
-                self.tracker.reset()
+                tracker.reset()
             else:
                 is_reset = False
 
             # translation
             start = time.time()
-            output, translations = self.translate(img)
+            result = self.translate(img, tracker)
             end = time.time()
 
             # send back
             return jsonify({
                 'status': 'success',
-                'image_base64': image_to_b64(output.image),
-                'channel_first': output.channel_first,
-                'translations': translations,
+                'image_base64': image_to_b64(result.img.image),
+                'channel_first': result.img.channel_first,
+                'translations': result.mt_texts,
                 'time': end - start,
                 'is_reset': is_reset,
             })
-
+        print(host, port)
         app.run(host=host, port=port)
 
 class FlaskClient(BaseClient):
-    def __init__(self, host='localhost', port='0000') -> None:
+    """
+    FlaskClient(
+        host='localhost', port='8000'
+    ).run(camid=0)
+    """
+
+    def __init__(self, host='localhost', port='8000') -> None:
         super().__init__(host, port)
         self.url = f'http://{host}:{port}/vdo2vdo'
 

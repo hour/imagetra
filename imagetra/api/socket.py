@@ -1,5 +1,6 @@
 from imagetra.common.media import Image
 from imagetra.api.base import BaseServer, BaseClient
+from imagetra.tracker import boxmot
 
 import socket, cv2, time, struct
 import numpy as np
@@ -7,11 +8,22 @@ import numpy as np
 BUFFER_SIZE = 65507  # Max size for a UDP packet
 
 class SocketServer(BaseServer):
-    def run(self, host: str = 'localhost', port: str = '0000'):
+    """
+    Example:
+    SocketServer(
+        pipeline=pipeline, fn_filter=filter.filter
+    ).run(
+        host='localhost', port='8000'
+    )
+    """
+
+    def run(self, host: str = 'localhost', port: str = '8000', tracker_type=boxmot.DEFAULT_TRACKER_TYPE):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind((host, int(port)))
         sock.listen(1)
         print("Server listening...")
+
+        tracker = self.build_tracker(tracker_type=tracker_type)
 
         while True:
             conn, addr = sock.accept()
@@ -41,13 +53,19 @@ class SocketServer(BaseServer):
 
                 frame = np.frombuffer(frame_data, dtype=np.uint8)
                 frame = Image(cv2.imdecode(frame, cv2.IMREAD_COLOR), channel_first=False)
-                output, translations = self.translate(frame)
-                output = cv2.imencode('.jpg', output.image)[1].tobytes()
+                result = self.translate(frame, tracker)
+                output = cv2.imencode('.jpg', result.img.image)[1].tobytes()
                 output = struct.pack("L", len(output)) + output
                 conn.sendall(output)
 
 class SocketClient(BaseClient):
-    def __init__(self, host='localhost', port='0000') -> None:
+    """
+    SocketClient(
+        host='localhost', port='8000'
+    ).run(camid=0)
+    """
+
+    def __init__(self, host='localhost', port='8000') -> None:
         self.host = host
         self.port = port
 

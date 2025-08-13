@@ -102,22 +102,26 @@ class Video2Video(Image2Image):
 
         return batch_out_imgs, batch_out_bboxs, batch_out_texts, batch_out_trans
     
+    def image2image(self, img: Image, tracker, src_lang: str=None, trg_lang: str=None, fn_filter=None):
+        bboxs, scores, texts, _ = self._recodetect([img], fn_filter)
+        bboxs, scores, texts = bboxs[0], scores[0], texts[0]
+
+        trans_imgs, trans_texts, tracked_bboxs, tracked_texts = self._translate_with_tracker(
+            bboxs, scores, texts, img, tracker
+        )
+
+        out_img = self._insert([img], [trans_imgs], [tracked_bboxs], pbar=lambda x: x)[0]
+
+        return Result(
+            img=out_img, 
+            mt_texts=trans_texts, 
+            ocr_texts=tracked_texts,
+            bboxs=tracked_bboxs,
+        )
+
     def iter(self, iterimgs, fn_filter=None, tracker_type=cvtracker.DEFAULT_TRACKER_TYPE):
         tracker = self.build_tracker(tracker_type)
 
         for img in tqdm(iterimgs):
-            bboxs, scores, texts, _ = self._recodetect([img], fn_filter)
-            bboxs, scores, texts = bboxs[0], scores[0], texts[0]
+            yield self.image2image(img, fn_filter=fn_filter, tracker=tracker)
 
-            trans_imgs, trans_texts, tracked_bboxs, tracked_texts = self._translate_with_tracker(
-                bboxs, scores, texts, img, tracker
-            )
-
-            out_img = self._insert([img], [trans_imgs], [tracked_bboxs], pbar=lambda x: x)[0]
-
-            yield Result(
-                img=out_img, 
-                mt_texts=trans_texts, 
-                ocr_texts=tracked_texts,
-                bboxs=tracked_bboxs,
-            )

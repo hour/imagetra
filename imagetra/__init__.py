@@ -1,19 +1,5 @@
 import pkgutil, importlib
 
-__all__ = []
-package_name = __name__
-
-# Import all submodules in the current package
-for _, module_name, is_pkg in pkgutil.iter_modules(__path__):
-    # Skip private modules
-    if module_name.startswith('_'):
-        continue
-
-    full_module_name = f"{package_name}.{module_name}"
-    module = importlib.import_module(full_module_name)
-    globals()[module_name] = module
-    __all__.append(module_name)
-
 def build_recodetector(configs):
     if configs.recodetector_name == 'doctr':
         from imagetra.detector.doctr import DoctrRecoDetector
@@ -124,3 +110,18 @@ def build_pipeline(name, configs, logfile=None):
         raise NotImplementedError(f'Unknown {name}')
 
     return pipeline
+
+__all__ = []
+skip_modules = ['serve.py', 'cli.py', 'translate.py']
+package_name = __name__
+
+# Import all submodules in the current package
+for _, module_name, is_pkg in pkgutil.iter_modules(__path__):
+    # Skip private modules
+    if module_name.startswith('_') or module_name in skip_modules:
+        continue
+
+    full_module_name = f"{package_name}.{module_name}"
+    module = importlib.import_module(full_module_name)
+    globals()[module_name] = module
+    __all__.append(module_name)

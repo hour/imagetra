@@ -1,17 +1,29 @@
 from imagetra.common.media import Image
 from imagetra.api.base import BaseServer, BaseClient
+from imagetra.tracker import boxmot
 
 import base64, cv2, time
 import numpy as np
 import asyncio, websockets
 
 class WebSocketServer(BaseServer):
-    def run(self, host: str = 'localhost', port: str = '0000'):
+    """
+    Example:
+    WebSocketServer(
+        pipeline=pipeline, fn_filter=filter.filter
+    ).run(
+        host='localhost', port='8000'
+    )
+    """
+
+    def run(self, host: str = 'localhost', port: str = '8000', tracker_type=boxmot.DEFAULT_TRACKER_TYPE):
+        tracker = self.build_tracker(tracker_type=tracker_type)
+
         async def process_frame(data: bytes) -> bytes:
             nparr = np.frombuffer(base64.b64decode(data), np.uint8)
             frame = Image(cv2.imdecode(nparr, cv2.IMREAD_COLOR), channel_first=False)
-            output, translations = self.translate(frame)
-            _, buffer = cv2.imencode('.jpg', output.image)
+            result = self.translate(frame, tracker)
+            _, buffer = cv2.imencode('.jpg', result.img.image)
             return base64.b64encode(buffer).decode('utf-8')
 
         async def handler(websocket):
@@ -31,7 +43,13 @@ class WebSocketServer(BaseServer):
         asyncio.run(_run())
 
 class WebSocketClient(BaseClient):
-    def __init__(self, host='localhost', port='0000') -> None:
+    """
+    WebSocketClient(
+        host='localhost', port='8000'
+    ).run(camid=0)
+    """
+
+    def __init__(self, host='localhost', port='8000') -> None:
         super().__init__(host, port)
         self.url = f"ws://{host}:{port}"
 

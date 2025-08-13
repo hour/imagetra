@@ -119,21 +119,24 @@ class Image2Image(Base):
             for out_img, texts, bboxs, translations in zip(out_imgs, batch_texts, batch_bboxs, batch_translations)
         ]
 
+    def image2image(self, img: Image, src_lang: str=None, trg_lang: str=None, fn_filter=None):
+        bboxs, scores, texts, _ = self._recodetect([img], fn_filter)
+        bboxs, scores, texts = bboxs[0], scores[0], texts[0]
+
+        trans_texts = self._translate_texts(texts, src_lang, trg_lang)
+        transformed_imgs = self._transform([img], [bboxs])
+        trans_imgs = self._edit(trans_texts, transformed_imgs)
+
+        out_img = self._insert([img], [trans_imgs], [bboxs], pbar=lambda x: x)[0]
+
+        return Result(
+            img=out_img, 
+            mt_texts=trans_texts, 
+            ocr_texts=texts,
+            bboxs=bboxs,
+        )
+
     def iter(self, iterimgs, src_lang: str=None, trg_lang: str=None, fn_filter=None):
         for img in iterimgs:
-            bboxs, scores, texts, _ = self._recodetect([img], fn_filter)
-            bboxs, scores, texts = bboxs[0], scores[0], texts[0]
-
-            trans_texts = self._translate_texts(texts, src_lang, trg_lang)
-            transformed_imgs = self._transform([img], [bboxs])
-            trans_imgs = self._edit(trans_texts, transformed_imgs)
-
-            out_img = self._insert([img], [trans_imgs], [bboxs], pbar=lambda x: x)[0]
-
-            yield Result(
-                img=out_img, 
-                mt_texts=trans_texts, 
-                ocr_texts=texts,
-                bboxs=bboxs,
-            )
+            yield self.image2image(img, src_lang=src_lang, trg_lang=trg_lang, fn_filter=fn_filter)
 
