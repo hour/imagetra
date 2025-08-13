@@ -67,6 +67,11 @@ all = [
     "paddleocr==2.10.0",
     "setuptools"
 ]
+cli = [
+    "opencv-python>=4.11.0.86",
+    "opencv-contrib-python>=4.9.0.80",
+    "boxmot>=13.0.9",
+]
 
 [tool.setuptools]
 packages = ["imagetra"]  # Replace with the actual package names if needed
