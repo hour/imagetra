@@ -13,7 +13,7 @@ uv pip install -e .[all]
 # Quick Start
 
 ```
-python translate.py -c configs/nllb.yaml <input_image_or_video_path> <output_image_or_video_path>
+imagetra_translate -c configs/nllb.yaml <input_image_or_video_path> <output_image_or_video_path>
 ```
 
 # Python Code
