@@ -16,7 +16,6 @@ class Config:
     editor_font_path: str=None
     editor_min_font_size: int=16
     editor_bbox_margin: float=0
-    editor_num_workers: int=1
     translator_name: str='nllb'
     translator_model_name: str='facebook/nllb-200-distilled-600M'
     translator_trg_lang: str='jpn_Jpan'
@@ -25,6 +24,7 @@ class Config:
     translator_textra_api_secret: str=None
     common_gpu: bool=True
     common_greedy: bool=False
+    common_num_workers: int=1
     
     @classmethod
     def load_yaml(cls, path: str):

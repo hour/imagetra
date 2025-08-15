@@ -82,10 +82,11 @@ class BaseRecognizer(Base):
         raise NotImplementedError()
 
 class BaseRecoDetector(Base):
-    def __init__(self, margin: float=0, padding: bool=True, **kwargs) -> None:
+    def __init__(self, margin: float=0, padding: bool=True, workers: int=0, **kwargs) -> None:
         super().__init__(**kwargs)
         self.margin = margin
         self.padding = padding
+        self.workers = workers
     
     def forward(self, imgs: List[Image]) -> List[Result]:
         assert(len(imgs) > 0)

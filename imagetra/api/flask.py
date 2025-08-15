@@ -49,7 +49,8 @@ class FlaskServer(BaseServer):
             logger.info(img_id)
             if img_id == 0:
                 is_reset = True
-                tracker.reset()
+                if tracker is not None:
+                    tracker.reset()
             else:
                 is_reset = False
 
@@ -67,7 +68,7 @@ class FlaskServer(BaseServer):
                 'time': end - start,
                 'is_reset': is_reset,
             })
-        print(host, port)
+        
         app.run(host=host, port=port)
 
 class FlaskClient(BaseClient):

@@ -21,7 +21,13 @@ def main(argv=None):
     config = Config.load_yaml(args.config)
     pipeline_type = 'vdo2vdo' if args.tracking else 'img2img'
     pipeline = build_pipeline(pipeline_type, config)
-    filter = BboxFilter()
+    
+    filter = BboxFilter(
+        detect_min_score=config.recodetector_detect_min_score,
+        recognize_min_score=config.recodetector_recognize_min_score,
+        bbox_min_width=config.recodetector_min_width,
+        bbox_min_height=config.recodetector_min_height,
+    )
 
     SERVER_MAP[args.type](
         pipeline=pipeline, fn_filter=filter.filter

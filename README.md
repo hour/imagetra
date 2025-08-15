@@ -69,10 +69,10 @@ export TEXTRA_SECRET=<your api_secret>
 
 - Visit [みんなの自動翻訳＠TexTra website](https://mt-auto-minhon-mlt.ucri.jgn-x.jp) to create a free account.
 - After login, check [this](https://mt-auto-minhon-mlt.ucri.jgn-x.jp/content/api/) to get the user ID, API key, and API secret.
-- Then, run `translate.py` using `configs/textra.yaml` as follows.
+- Then, run `imagetra_translate` using `configs/textra.yaml` as follows.
 
 ```
-python translate.py -c configs/textra.yaml <input_image_or_video_path> <output_image_or_video_path>
+imagetra_translate -c configs/textra.yaml <input_image_or_video_path> <output_image_or_video_path>
 ```
 
 

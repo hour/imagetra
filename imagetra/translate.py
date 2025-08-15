@@ -1,6 +1,6 @@
 from imagetra.common.logger import get_logger, LogFile
 from imagetra.common.filter import BboxFilter
-from imagetra.tracker import cvtracker
+from imagetra.tracker import boxmot
 from imagetra import build_pipeline
 from imagetra.common.metric import Timer
 from imagetra.common.config import Config
@@ -16,8 +16,6 @@ def run_video(args, pipeline, filter):
     logger.info(f'Vidoe frames: {len(video)}')
 
     wkargs = {'tracker_type': args.tracker_type} if args.tracking else {}
-    if config.common_greedy:
-        pipeline = pipeline.iter
 
     logfile = LogFile(args.logfile)
 
@@ -66,7 +64,7 @@ def main(argv=None):
     parser.add_argument('--config', '-c', default=f'{homedir}/../configs/paddleocr.yaml')
     parser.add_argument('--logfile', '-l')
     parser.add_argument('--tracking', action='store_true')
-    parser.add_argument('--tracker_type', default=cvtracker.DEFAULT_TRACKER_TYPE)
+    parser.add_argument('--tracker_type', default=boxmot.DEFAULT_TRACKER_TYPE)
     parser.add_argument('--verbose', '-v', action='store_true')
     args = parser.parse_args(argv)
 
@@ -82,6 +80,9 @@ def main(argv=None):
 
     pipeline_name = 'vdo2vdo' if args.tracking else 'img2img'
     pipeline = build_pipeline(pipeline_name, config, logfile=args.logfile)
+
+    if config.common_greedy:
+        pipeline = pipeline.iter
 
     if 'video' in filetype:
         run_video(args, pipeline, filter)

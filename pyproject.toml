@@ -76,9 +76,6 @@ cli = [
 [tool.setuptools]
 packages = ["imagetra"]  # Replace with the actual package names if needed
 
-[tool.setuptools.package-data]
-# Include any package data here if needed, e.g. {"": ["*.txt"]}
-
 [project.scripts]
 # Add console scripts here if needed, e.g. myscript = "imagetra.module:main"
 imagetra_serve = "imagetra.serve:main"

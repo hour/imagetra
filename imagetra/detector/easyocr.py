@@ -52,7 +52,7 @@ class EasyOCRRecoDetector(BaseRecoDetector):
 
     def recodetect(self, imgs: List[Image]) -> List[Result]:
         results = [
-            self.model.readtext(img.image)
+            self.model.readtext(img.image, workers=self.workers)
             for img in imgs
         ]
         return [format(result) for result in results]

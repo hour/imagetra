@@ -16,7 +16,7 @@ def build_recodetector(configs):
         from imagetra.detector.easyocr import EasyOCRRecoDetector
         import re
         langs = re.split(f' *, *', configs.recodetector_langs)
-        recodetector = EasyOCRRecoDetector(langs=langs)
+        recodetector = EasyOCRRecoDetector(langs=langs, workers=configs.common_num_workers)
     elif configs.recodetector_name == 'paddleocr':
         from imagetra.detector.paddleocr import PaddleOCRRecoDetector
         recodetector = PaddleOCRRecoDetector(lang=configs.recodetector_langs)
@@ -65,7 +65,7 @@ def build_editor(configs):
             min_font_size=configs.editor_min_font_size,
             padding_lr=configs.editor_bbox_margin,
             padding_tb=configs.editor_bbox_margin,
-            num_workers=configs.editor_num_workers,
+            num_workers=configs.common_num_workers,
         )
     else:
         raise NotImplementedError(f'Unknown {configs.editor_name}')
