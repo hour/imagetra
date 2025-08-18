@@ -65,7 +65,7 @@ def build_editor(configs):
             min_font_size=configs.editor_min_font_size,
             padding_lr=configs.editor_bbox_margin,
             padding_tb=configs.editor_bbox_margin,
-            num_workers=configs.common_num_workers,
+            num_workers=configs.editor_num_workers,
         )
     else:
         raise NotImplementedError(f'Unknown {configs.editor_name}')
