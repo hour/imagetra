@@ -6,6 +6,7 @@ from imagetra.common.metric import Timer
 from imagetra.common.config import Config
 
 import mimetypes, os
+import numpy as np
 
 homedir = os.path.dirname(__file__)
 logger = get_logger('imagetra')
@@ -21,11 +22,17 @@ def run_video(args, pipeline, filter):
 
     timer = Timer().start()
     for i, result in enumerate(pipeline(video.frames, fn_filter=filter.filter, **wkargs)):
-        img = result.img.draw_bboxs(result.bboxs) if args.verbose else result.img
-        video.replace(img, i)
+        if args.verbose:
+            out_img = result.img.draw_bboxs(result.bboxs)
+            out_img.image = np.hstack((out_img.image, result.img.image))
+        else:
+            out_img = result.img
+
+        video.replace(out_img, i)
         if result.ocr_texts is not None and result.mt_texts is not None:
             for ocr_text, mt_text in zip(result.ocr_texts, result.mt_texts):
                 logfile.print(f'frame@{i} : {ocr_text} -> {mt_text}')
+
         timer.track()
     
     logfile.print('-'*50)
@@ -43,8 +50,14 @@ def run_imgs(args, pipeline, filter):
 
     timer = Timer().start()
     result = pipeline([img], fn_filter=filter.filter)[0]
-    img = result.img.draw_bboxs(result.bboxs) if args.verbose else result.img
-    img.save(args.output)
+    
+    if args.verbose:
+        out_img = result.img.draw_bboxs(result.bboxs)
+        out_img.image = np.hstack((out_img.image, img.image))
+    else:
+        out_img = result.img
+
+    out_img.save(args.output)
 
     if result.ocr_texts is not None and result.mt_texts is not None:
         for ocr_text, mt_text in zip(result.ocr_texts, result.mt_texts):
