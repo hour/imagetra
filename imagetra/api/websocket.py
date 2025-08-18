@@ -53,7 +53,7 @@ class WebSocketClient(BaseClient):
         super().__init__(host, port)
         self.url = f"ws://{host}:{port}"
 
-    def run(self, camid=0, fn_update_cap=lambda x: x):
+    def run(self, camid=0, fn_update_cap=lambda x: x, verbose=False):
         async def send_video():
             async with websockets.connect(self.url) as websocket:
                 cap = cv2.VideoCapture(camid)
@@ -70,9 +70,13 @@ class WebSocketClient(BaseClient):
 
                     # Receive and decode processed frame
                     response = await websocket.recv()
-                    img = np.frombuffer(base64.b64decode(response), np.uint8)
-                    img = cv2.imdecode(img, cv2.IMREAD_COLOR)
-                    cv2.imshow("Processed Video", img)
+                    out_img = np.frombuffer(base64.b64decode(response), np.uint8)
+                    out_img = cv2.imdecode(out_img, cv2.IMREAD_COLOR)
+
+                    if verbose:
+                        out_img = np.hstack((out_img, frame))
+
+                    cv2.imshow("Processed Video", out_img)
 
                     if cv2.waitKey(1) & 0xFF == ord('q'):
                         break

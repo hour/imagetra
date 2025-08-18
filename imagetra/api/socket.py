@@ -69,7 +69,7 @@ class SocketClient(BaseClient):
         self.host = host
         self.port = port
 
-    def run(self, camid=0, fn_update_cap=lambda x: x):
+    def run(self, camid=0, fn_update_cap=lambda x: x, verbose=False):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
             sock.connect((self.host, int(self.port)))
             cap = cv2.VideoCapture(camid)
@@ -101,8 +101,12 @@ class SocketClient(BaseClient):
                 edited_frame_data = data[:msg_size]
                 data = data[msg_size:]
 
-                frame = cv2.imdecode(np.frombuffer(edited_frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
-                cv2.imshow("Processed Video", frame)
+                out_frame = cv2.imdecode(np.frombuffer(edited_frame_data, dtype=np.uint8), cv2.IMREAD_COLOR)
+
+                if verbose:
+                    out_frame = np.hstack((out_frame, frame)) 
+
+                cv2.imshow("Processed Video", out_frame)
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break

@@ -104,7 +104,7 @@ class FlaskClient(BaseClient):
 
         return Image(output, channel_first=res_content['channel_first']), translations, time
 
-    def run(self, camid=0, fn_update_cap=lambda x: x):
+    def run(self, camid=0, fn_update_cap=lambda x: x, verbose=False):
         logger = get_logger('FlaskClient')
 
         cap = cv2.VideoCapture(camid)
@@ -123,6 +123,10 @@ class FlaskClient(BaseClient):
 
             frame = Image(frame, channel_first=False)
             out_img, _, server_time = self.translate(frame, frame_id)
+
+            if verbose:
+                out_img.image = np.hstack((out_img.image, frame.image))
+
             # server_time = 0
             cv2.imshow('Camera Feed', out_img.image)
             frame_id += 1
