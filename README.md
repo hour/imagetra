@@ -1,3 +1,6 @@
+# ImageTra
+This is a toolkit for building a pipeline to translate texts in images, videos, or live stream videos from one language to another using publicly available models and tools. 
+
 # Dependency
 - Python==3.11.0
 - CUDA==12.6.3
