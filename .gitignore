@@ -5,3 +5,4 @@ imagetra.egg-info/
 srnet/models/*
 srnet/SRNet-Datagen/data/fonts/english_ttf/*
 srnet/SRNet-Datagen/data/fonts/japanese_ttf/*
+build/*
