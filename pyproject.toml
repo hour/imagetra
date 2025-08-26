@@ -73,8 +73,8 @@ cli = [
     "boxmot>=13.0.9",
 ]
 
-[tool.setuptools]
-packages = ["imagetra"]  # Replace with the actual package names if needed
+[tool.setuptools.packages.find]
+where = ["."]
 
 [project.scripts]
 # Add console scripts here if needed, e.g. myscript = "imagetra.module:main"
