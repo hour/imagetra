@@ -16,7 +16,7 @@ def build_recodetector(configs):
         from imagetra.detector.easyocr import EasyOCRRecoDetector
         import re
         langs = re.split(f' *, *', configs.recodetector_langs)
-        recodetector = EasyOCRRecoDetector(langs=langs, workers=configs.common_num_workers)
+        recodetector = EasyOCRRecoDetector(langs=langs)
     elif configs.recodetector_name == 'paddleocr':
         from imagetra.detector.paddleocr import PaddleOCRRecoDetector
         recodetector = PaddleOCRRecoDetector(lang=configs.recodetector_langs)

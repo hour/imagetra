@@ -25,7 +25,6 @@ class Config:
     translator_textra_api_secret: str=None
     common_gpu: bool=True
     common_greedy: bool=False
-    common_num_workers: int=1
     
     @classmethod
     def load_yaml(cls, path: str):
