@@ -74,7 +74,8 @@ cli = [
 ]
 
 [tool.setuptools.packages.find]
-where = ["."]
+include = ["imagetra*"]
+exclude = ["srnet*", "configs*"]
 
 [project.scripts]
 # Add console scripts here if needed, e.g. myscript = "imagetra.module:main"
