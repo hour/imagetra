@@ -50,6 +50,7 @@ def run_imgs(args, pipeline, filter):
 
     timer = Timer().start()
     result = pipeline([img], fn_filter=filter.filter)[0]
+    timer.track()
     
     if args.verbose:
         out_img = result.img.draw_bboxs(result.bboxs)
@@ -62,8 +63,6 @@ def run_imgs(args, pipeline, filter):
     if result.ocr_texts is not None and result.mt_texts is not None:
         for ocr_text, mt_text in zip(result.ocr_texts, result.mt_texts):
             logfile.print(f'{ocr_text} -> {mt_text}')
-
-    timer.track()
 
     logfile.print('-'*50)
     logfile.print(f'Execute time:\n{timer.format()}')
