@@ -256,7 +256,7 @@ class SRNetEditor(BaseEditor):
         # device and models
         self.device = torch.device("cpu")
         self.generator = Generator(in_channels = 3)
-        self.generator.load_state_dict(torch.load(model_path)['generator'])
+        self.generator.load_state_dict(torch.load(model_path, map_location=self.device)['generator'])
         self.generator.eval()
 
     def to(self, device: str):
