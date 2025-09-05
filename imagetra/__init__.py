@@ -23,7 +23,10 @@ def build_recodetector(configs):
     else:
         raise NotImplementedError(f'Unknown {configs.recodetector_name}')
     if configs.common_gpu:
-        recodetector.to('cuda')
+        try:
+            recodetector.to('cuda')
+        except:
+            recodetector.to('mps')
     return recodetector
 
 def build_translator(configs):
@@ -45,7 +48,10 @@ def build_translator(configs):
     else:
         raise NotImplementedError(f'Unknown {configs.translator_name}')
     if configs.common_gpu:
-        translator.to('cuda')
+        try:
+            translator.to('cuda')
+        except:
+            translator.to('mps')
     return translator
 
 def build_editor(configs):
@@ -70,7 +76,10 @@ def build_editor(configs):
     else:
         raise NotImplementedError(f'Unknown {configs.editor_name}')
     if configs.common_gpu:
-        editor.to('cuda')
+        try:
+            editor.to('cuda')
+        except:
+            editor.to('mps')
     return editor
 
 def build_pipeline(name, configs, logfile=None):
