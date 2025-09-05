@@ -35,10 +35,6 @@ class Image2Image(Base):
         self.fix_bbox = Bbox.from_wh(width=900, height=300) if fix_bbox else None
         self.logfile = logfile
 
-        recodetector.show_pbar = False
-        editor.show_pbar = False
-        translator.show_pbar = False
-
     def _edit(self, translations: List[str], imgs: List[Image]):
         if len(translations) < 1:
             return []
@@ -137,6 +133,13 @@ class Image2Image(Base):
         )
 
     def iter(self, iterimgs, src_lang: str=None, trg_lang: str=None, fn_filter=None):
-        for img in iterimgs:
+        self.recodetector.show_pbar = False
+        self.editor.show_pbar = False
+        self.translator.show_pbar = False
+
+        for img in tqdm(iterimgs):
             yield self.image2image(img, src_lang=src_lang, trg_lang=trg_lang, fn_filter=fn_filter)
 
+        self.recodetector.show_pbar = True
+        self.editor.show_pbar = True
+        self.translator.show_pbar = True

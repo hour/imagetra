@@ -29,10 +29,6 @@ class Video2Video(Image2Image):
         )
         self.min_share_ratio = min_share_ratio
         
-        recodetector.show_pbar = False
-        editor.show_pbar = False
-        translator.show_pbar = False
-
     def _translate_and_edit(self, texts, bboxs, main_img):
         translations = self._translate_texts(texts)
         out_imgs = self._transform([main_img], [bboxs])
@@ -120,8 +116,15 @@ class Video2Video(Image2Image):
         )
 
     def iter(self, iterimgs, fn_filter=None, tracker_type=cvtracker.DEFAULT_TRACKER_TYPE):
+        self.recodetector.show_pbar = False
+        self.editor.show_pbar = False
+        self.translator.show_pbar = False
+
         tracker = self.build_tracker(tracker_type)
 
         for img in tqdm(iterimgs):
             yield self.image2image(img, fn_filter=fn_filter, tracker=tracker)
 
+        self.recodetector.show_pbar = True
+        self.editor.show_pbar = True
+        self.translator.show_pbar = True
