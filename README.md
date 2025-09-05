@@ -10,8 +10,9 @@ This is a toolkit for building a pipeline to translate texts in images, videos, 
 ```
 uv venv --python 3.11
 source .venv/bin/activate
-uv pip install -e .[all]
+uv pip install -e ".[all]" 
 ```
+- If it fails, specify name of an OCR engine instead of `all`. For example, `openocr`, `paddleocr`, `easyocr`, or `doctr`.
 
 # Quick Start
 
