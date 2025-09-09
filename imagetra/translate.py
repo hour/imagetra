@@ -112,15 +112,15 @@ def run_real_time(args, pipeline, filter):
 def main(argv=None):
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('input')
-    parser.add_argument('output')
-    parser.add_argument('--config', '-c', default=f'{homedir}/../configs/paddleocr.yaml')
-    parser.add_argument('--logfile', '-l')
-    parser.add_argument('--tracking', action='store_true')
-    parser.add_argument('--tracker_type', default=boxmot.DEFAULT_TRACKER_TYPE)
+    parser.add_argument('input', help='Path to an image, a video, or a camera ID.')
+    parser.add_argument('output', help='Path to the output. If the input is a camera ID, the output is ignored.')
+    parser.add_argument('--config', '-c', default=f'{homedir}/../configs/paddleocr.yaml', help='Path to the configuration file.')
+    parser.add_argument('--logfile', '-l', help='Path to the log file.')
+    parser.add_argument('--tracking', action='store_true', help='Enable text tracking.')
+    parser.add_argument('--tracker_type', default=boxmot.DEFAULT_TRACKER_TYPE, help='Type of tracker to use.')
     parser.add_argument('--verbose', '-v', action='store_true')
-    parser.add_argument('--scale', type=float)
-    parser.add_argument('--fps', type=int)
+    parser.add_argument('--scale', type=float, help='Scaling factor for the camera frames.')
+    parser.add_argument('--fps', type=int, help='Frames per second (FPS) of the camera.')
     args = parser.parse_args(argv)
 
     try:
