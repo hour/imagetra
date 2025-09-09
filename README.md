@@ -37,8 +37,8 @@ editor = RenderEditor() # add `font=<font path>` argument to support non-ASCII t
 # build a pipeline
 from imagetra.pipeline import Image2Image
 pipeline = Image2Image(
-    recodetector=ocr,
-    translator=mt,
+    recodetector=recodetector,
+    translator=translator,
     editor=editor
 )
 
