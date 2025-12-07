@@ -18,6 +18,9 @@ uv pip install -e ".[all]" # for all ocrs
 
 ```
 imagetra_translate -c configs/nllb.yaml <input_image_or_video_path> <output_image_or_video_path>
+
+# Realtime translation
+imagetra_translate -c configs/nllb.yaml <camera_id> - # e.g., camera_id=0.
 ```
 
 # Python Code
@@ -83,6 +86,14 @@ imagetra_translate -c configs/textra.yaml <input_image_or_video_path> <output_im
 
 # Citation
 ```
+@inproceedings{hour2025imagetra,
+  title={ImageTra: Real-Time Translation for Texts in Image and Video},
+  author={Kaing, Hour and Mao, Jiannan and Song, Haiyue and Ding, Chenchen and Tanaka, Hideki and Utiyama, Masao},
+  booktitle={Proceedings of the International Joint Conference on Natural Language Processing & Asia-Pacific Chapter of the Association for Computational Linguistics (IJCNLP-AACL)},
+  year={2025},
+  note={to appear}
+}
+
 @article{kaing2024towards,
   title={Towards Scene Text Translation for Complex Writing Systems},
   author={Kaing, Hour and Song, Haiyue and Ding, Chenchen and Mao, Jiannan and Tanaka, Hideki and Utiyama, Masao},
