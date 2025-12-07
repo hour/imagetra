@@ -234,9 +234,7 @@ class TextImage:
         self.padding_lr = padding_lr
         self.padding_tb = padding_tb
         self.max_num_line = max_num_line
-        self.font, self.center_left, self.center_top = self.init_font(
-            font, min_font_size
-        ) # name or path
+        self.font = self.init_font(font, min_font_size) # name or path
 
     def init_font(self, font, min_font_size):
         def _create_font(size):
@@ -245,57 +243,39 @@ class TextImage:
             except:
                 return ImageFont.load_default(size=size)
 
-        def _width_height(size):
-            left, top, right, bottom = _create_font(size).getbbox(self.text)
-            width = right + left
-            height = bottom + top
-            return width, height
-
-        avg_width = self.width/len(self.text)
-        size = max(min(int(avg_width * self.scale), self.height), 1) # Approximation
-        max_font_size = max(min(self.height, size), min_font_size+1)
-        min_font_size = min(min_font_size, max_font_size-1)
+        font_size, size = min_font_size, None
         offset_width, offset_height = self.padding_lr*2, self.padding_tb*2
+        width, height = self.width - offset_width, self.height - offset_height
+        draw = ImageDraw.Draw(PILImage.new("RGB", (width, height), self.background))
 
-        width, height = _width_height(min_font_size)
-        if width > self.width - offset_width or height > self.height - offset_height:
-            size = min_font_size
-        else:
-            step = max(int(max_font_size * 0.1), 1)
-            for _size in range(max_font_size, min_font_size, -step):
-                width, height = _width_height(_size)
-                if width <= self.width - offset_width and height <= self.height - offset_height:
-                    size = _size
-                    break
-            width, height = _width_height(size)
+        def _width_height(font):
+            left, top, right, bottom = draw.multiline_textbbox((0,0), self.text, font=font)
+            _width = right + left
+            _height = bottom + top
+            return _width, _height
+        
+        font = _create_font(font_size)
 
-        center_left = max(self.width - width, self.padding_lr) / 2
-        center_top = max(self.height - height, self.padding_tb) / 2
-
-        if self.max_num_line > 1:
-            ratio = min(self.height / height / 2, self.max_num_line)
-            if ratio >= 1:
-                assert('\n' not in self.text)
-                size *= int(ratio)
-                words = self.text.split(' ')
-                n_word_per_line = max(1, round(len(words) / ratio))
-                lines = [
-                    ' '.join(words[i:min(i + n_word_per_line, len(words))])
-                    for i in range(0, len(words), n_word_per_line)
-                ]
-                self.text = '\n'.join(lines)
-                center_top = max(self.height - height * int(ratio) * 2, self.padding_tb) / 2
-
-        return _create_font(size), center_left, center_top
+        while (size is None or size[0] < width or size[1] < height) and font_size > 0:
+            font = font.font_variant(size=font_size)
+            size = _width_height(font)
+            alpha = min(width-size[0], height-size[1]) // 10
+            if alpha == 0:
+                break
+            font_size += alpha
+            
+        font_size = max(font_size, min_font_size)
+        return font.font_variant(size=font_size)
 
     def draw(self) -> PILImage:
         img = PILImage.new('RGB', (self.width, self.height), self.background) # black background
         draw = ImageDraw.Draw(img)
         draw.text(
-            (self.center_left, self.center_top), # left spacing and vertically middle
+            (self.width//2, self.height//2), # left spacing and vertically middle
             self.text,
             fill=self.fill,
             font=self.font,
+            anchor="mm",
         )
         
         assert(not (np.asarray(img)==self.background).all())
