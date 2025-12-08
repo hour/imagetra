@@ -86,7 +86,7 @@ imagetra_translate -c configs/textra.yaml <input_image_or_video_path> <output_im
 
 # Citation
 ```
-@inproceedings{hour2025imagetra,
+@inproceedings{kaing2025imagetra,
   title={ImageTra: Real-Time Translation for Texts in Image and Video},
   author={Kaing, Hour and Mao, Jiannan and Song, Haiyue and Ding, Chenchen and Tanaka, Hideki and Utiyama, Masao},
   booktitle={Proceedings of the International Joint Conference on Natural Language Processing & Asia-Pacific Chapter of the Association for Computational Linguistics (IJCNLP-AACL)},
