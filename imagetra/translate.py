@@ -7,6 +7,8 @@ from imagetra.common.config import Config
 
 import mimetypes, os
 import numpy as np
+import cv2
+from datetime import timedelta
 
 homedir = os.path.dirname(__file__)
 logger = get_logger('imagetra')
@@ -68,6 +70,30 @@ def run_imgs(args, pipeline, filter):
     logfile.print(f'Execute time:\n{timer.format()}')
     logfile.close()
 
+def put_multiline_text(
+    img,
+    text,
+    org=(10, 30),
+    font=cv2.FONT_HERSHEY_SIMPLEX,
+    font_scale=0.7,
+    color=(0, 255, 0),
+    thickness=2,
+    line_gap=5
+):
+    x, y = org
+    for i, line in enumerate(text.split("\n")):
+        y_line = y + i * (int(font_scale * 30) + line_gap)
+        cv2.putText(
+            img,
+            line,
+            (x, y_line),
+            font,
+            font_scale,
+            color,
+            thickness,
+            cv2.LINE_AA
+        )
+
 def run_real_time(args, pipeline, filter):
     import cv2, time
     from imagetra.common.media import Image
@@ -95,9 +121,18 @@ def run_real_time(args, pipeline, filter):
 
     wkargs = {'tracker_type': args.tracker_type} if args.tracking else {}
 
+    timer = Timer().start()
     for result in pipeline(_gen(), fn_filter=filter.filter, **wkargs):
+        timer.track()
         if args.verbose:
             out_img = result.img.draw_bboxs(result.bboxs)
+            out_img.image = out_img.image.copy()
+            curr_time = str(timedelta(seconds=timer.tracks[len(timer.tracks)-1]))
+            put_multiline_text(
+                out_img.image,
+                f'Latency: {curr_time}\n'+timer.format(),
+                org=(10, 30)
+            )
         else:
             out_img = result.img
         
