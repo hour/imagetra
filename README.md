@@ -94,7 +94,7 @@ imagetra_translate -c configs/textra.yaml <input_image_or_video_path> <output_im
   note={to appear}
 }
 
-@article{kaing2024towards,
+@article{kaing2025towards,
   title={Towards Scene Text Translation for Complex Writing Systems},
   author={Kaing, Hour and Song, Haiyue and Ding, Chenchen and Mao, Jiannan and Tanaka, Hideki and Utiyama, Masao},
   journal={言語処理学会 第30回年次大会},
