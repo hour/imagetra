@@ -6,7 +6,8 @@ from imagetra.common.transform import transform
 from imagetra.common.batch import get_batch, unflatten
 from imagetra.common.result import Result
 
-from typing import List
+from typing import List, Optional
+from difflib import SequenceMatcher
 import numpy as np
 import lap
 from pyfoma import FST, State
@@ -165,16 +166,27 @@ class EnsembleRecoDetector(BaseRecoDetector):
         for recodetector in self.recodetectors:
             recodetector.to(device)
 
-    def group_bboxs(self, bboxs1, bboxs2) -> List[Bbox]:
+    def group_bboxs(
+        self,
+        bboxs1,
+        bboxs2,
+        texts1: Optional[List[str]] = None,
+        texts2: Optional[List[str]] = None,
+    ) -> List[Bbox]:
+        use_text = texts1 is not None and texts2 is not None
         row, col = len(bboxs1), len(bboxs2)
         ious = np.zeros((row, col))
         for i in range(row):
             for j in range(col):
-                score = max(
+                spatial_score = max(
                     bboxs1[i].ap(bboxs2[j]),
                     bboxs1[i].ar(bboxs2[j])
                 )
-                # [TODO] consider text similarity
+                if use_text:
+                    text_score = SequenceMatcher(None, texts1[i], texts2[j]).ratio()
+                    score = (spatial_score + text_score) / 2
+                else:
+                    score = spatial_score
                 ious[i, j] = score
         
         costs = 1 - np.array(ious)
@@ -291,9 +303,12 @@ class EnsembleRecoDetector(BaseRecoDetector):
             assert(len(results) == anchor_results_length)
 
             for i in range(anchor_results_length):
+                curr_texts1 = [text_list[0] for text_list in final_ocr_texts[i]]
                 group_ids = self.group_bboxs(
-                    final_bboxs[i], 
-                    results[i].bboxs
+                    final_bboxs[i],
+                    results[i].bboxs,
+                    texts1=curr_texts1,
+                    texts2=results[i].ocr_texts,
                 )
                 # merge bboxes
                 final_bboxs[i] = self.merge_bboxs(final_bboxs[i], results[i].bboxs, group_ids)
